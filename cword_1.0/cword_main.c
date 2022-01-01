@@ -11,8 +11,8 @@ extern int Show(FILE **file);
 int main(int argc,char *argv[])
 {
 	FILE *cword_config; /*准备指向cword配置文件的空指针*/
-	FILE *fFilename;
-	fFilename=NULL;
+	FILE *fFileName;
+	fFileName=NULL;
 	FILE *fDefaultFile; /*配置文件中的默认文件*/
 	fDefaultFile=NULL;
 	int file_index=0; /*显示文件存在状态，为0则不存在文件，程序末尾不会关闭该指针*/
@@ -97,14 +97,14 @@ help:
 						printf("不能打开以“.”开头的文件\n\n");
 						goto exit;
 					}
-					if((fFilename = fopen(argv[2],"r")) == NULL)
+					if((fFileName = fopen(argv[2],"r")) == NULL)
 					{
 						printf("指定的文件 %s 不存在\n\n",argv[2]);
 						goto exit;
 					}
 					else /*打开单词表操作*/
 					{
-						fFilename = fopen(argv[2],"r+"); /* r+ 读写操作，指针位于程序开头*/
+						fFileName = fopen(argv[2],"r+"); /* r+ 读写操作，指针位于程序开头*/
 						file_index=1;
 					}
 					break;
@@ -114,14 +114,14 @@ help:
 						printf("不能清空以“.”开头的文件\n\n");
 						goto exit;
 					}
-					if((fFilename = fopen(argv[2],"r")) == NULL)
+					if((fFileName = fopen(argv[2],"r")) == NULL)
                                         {
                                                 printf("指定的文件 %s 不存在\n\n",argv[2]);
                                                 goto exit;
                                         }
                                         else /*清空单词表操作*/
                                         {
-						fFilename = fopen(argv[2],"w"); /*使用w选项清空了单词表*/
+						fFileName = fopen(argv[2],"w"); /*使用w选项清空了单词表*/
                                                 file_index=1;
 						goto exit;
 					}
@@ -132,7 +132,7 @@ help:
 						printf("以“.”开头的文件不能作为默认文件\n\n");
 						goto exit;
 					}
-					if((fFilename = fopen(argv[2],"r+")) == NULL) /*注意，此处以r+读写方式打开文件*/
+					if((fFileName = fopen(argv[2],"r+")) == NULL) /*注意，此处以r+读写方式打开文件*/
                                         {
                                                 printf("指定的文件 %s 不存在\n\n",argv[2]);
                                                 goto exit;
@@ -152,7 +152,7 @@ help:
 					}
 					break;
 				case 'c': /*创建单词表操作*/
-					if((fFilename = fopen(argv[2],"r")) != NULL)
+					if((fFileName = fopen(argv[2],"r")) != NULL)
                                         {
 						printf("指定的单词表文件 %s 已存在，无需创建\n\n",argv[2]);
                                                 goto exit;
@@ -169,8 +169,8 @@ help:
 							printf("单词表文件名不可以“.”开头！请重命名\n\n");
 							goto exit;
 						}
-						fFilename = fopen(argv[2],"w+");
-						if((fFilename = fopen(argv[2],"r")) != NULL) /*判断是否创建成功*/
+						fFileName = fopen(argv[2],"w+");
+						if((fFileName = fopen(argv[2],"r")) != NULL) /*判断是否创建成功*/
 						{
 							printf("单词表创建成功！\n");
 						}
@@ -247,7 +247,7 @@ help:
 			}
 			else
 			{
-				Write(&fFilename);
+				Write(&fFileName);
 			}
 			iCorrect=1;
 		}
@@ -259,7 +259,7 @@ help:
 			}
 			else
 			{
-				iCorrect=Show(&fFilename);
+				iCorrect=Show(&fFileName);
 			}
 			if(iCorrect!=1)
 			{
@@ -285,7 +285,7 @@ exit: /*退出程序，程序出口*/
 	fclose(cword_config);
 	if(file_index != 0) /*若文件存在则使用后关闭该文件指针*/
 	{
-		fclose(fFilename);
+		fclose(fFileName);
 	}
 	return 0;
 }
