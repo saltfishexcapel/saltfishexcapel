@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-extern int Show(FILE **file) /*展示单词功能函数*/
+extern int Show(FILE *file) /*展示单词功能函数*/
 {
-	int iIndex;
+	signed int iIndex;
 	FILE *WordFile;
-	WordFile=*file;
+	WordFile = file;
 	struct Show_Word_Struct
 	{
 		int iNumber;
@@ -14,42 +14,37 @@ extern int Show(FILE **file) /*展示单词功能函数*/
 		struct Show_Word_Struct* pNext; //使用链表结构
 	};
 
-	int iCount=0;
+	int iCount = 0;
 
 	//将单词从文件读出,写入到内存
 	
-	struct Show_Word_Struct* pHead=NULL;
+	struct Show_Word_Struct* pHead = NULL;
 	struct Show_Word_Struct* pEnd,* pNew;
 	long lDot; //流式文件当前位置
 	rewind(WordFile);
-	lDot=ftell(WordFile);
-	pEnd=pNew=(struct Show_Word_Struct*)malloc(sizeof(struct Show_Word_Struct));
+	lDot = ftell(WordFile);
+	pEnd = pNew = (struct Show_Word_Struct*)malloc(sizeof(struct Show_Word_Struct));
 	//将单词读到内存中
 	do
 	{
-		//printf("debug: 执行了do\n");
-		if((fgetc(WordFile) == EOF)&&(iCount==0)) //单词列表为空的提示
+		if ((fgetc(WordFile) == EOF)&&(iCount == 0)) //单词列表为空，转至写单词
 		{
-			printf("单词列表为空！快添加单词吧！\n\n");
-			//fseek(WordFile,lDot,SEEK_SET); 
-			//返回最后位置
-			iIndex=0; //函数返回的参数
+			iIndex = -1; //单词表为空，函数返回-1，直接转到写单词函数
 			goto exit_show;
 		}
 		else
 		{
-			iIndex=1;
+			iIndex = 0; //若单词表不为空，iIndex为0（函数返回必为0）
 			fseek(WordFile,lDot,SEEK_SET);
 		}
 		if(fgetc(WordFile) == '$')
 		{
-			//printf("debug: $执行了该步骤,lDot:%ld\n",lDot);
 			lDot++; //移向下一位
 			fseek(WordFile,lDot,SEEK_SET);
 			int r;
 			for(r=0;r<7;r++)
 			{
-				//printf("debug: r$\n");
+				//写入内存，遇到#时退出
 				if((pNew->cNumber[r]=fgetc(WordFile)) == '#')
 				{
 					pNew->cNumber[r]='\0';
@@ -57,9 +52,8 @@ extern int Show(FILE **file) /*展示单词功能函数*/
 				}
 			}
 			pNew->iNumber=atoi(pNew->cNumber);
-			lDot=ftell(WordFile)+1;
+			lDot = ftell(WordFile)+1; //文件指针将指向下一位
 			fseek(WordFile,lDot,SEEK_SET);
-			//printf("debug: $-#lDot:%ld\n",lDot);
 		}
 		else
 		{
@@ -68,30 +62,22 @@ extern int Show(FILE **file) /*展示单词功能函数*/
 		}
 		if(fgetc(WordFile) == '!')
 		{
-			//printf("debug: !执行了该步骤,lDot:%ld\n",lDot);
 			lDot++;
 			fseek(WordFile,lDot,SEEK_SET);
-			//printf("debug: 1lDot:%ld\n",lDot);
 			int s;
 			for(s=0;s<52;s++)
 			{
-				//printf("debug: 01cEnglish,s:%d\n",s);
-				//printf("debug: 2ftell:%ld\n",ftell(WordFile));
 				if((pNew->cEnglish[s]=fgetc(WordFile)) == '#')
 				{
-					//printf("debug: 02cEnglish,s:%d\n",s);
-					//printf("debug: 3lDot:%ld\n",lDot);
 					pNew->cEnglish[s]='\0';
 					s=52;
 				}
 			}
-			lDot=ftell(WordFile)+1;
+			lDot = ftell(WordFile)+1;
 			fseek(WordFile,lDot,SEEK_SET);
-			//printf("debug: !-#lDot:%ld\n",lDot);
 		}
 		if(fgetc(WordFile) == '@')
 		{
-			//printf("debug: @执行了该步骤,lDot:%ld\n",lDot);
 			lDot++;
 			fseek(WordFile,lDot,SEEK_SET);
 			int r;
@@ -103,22 +89,21 @@ extern int Show(FILE **file) /*展示单词功能函数*/
 					break;
 				}
 			}
-			lDot=ftell(WordFile)+1;
+			lDot = ftell(WordFile)+1;
 			fseek(WordFile,lDot,SEEK_SET);
-			//printf("debug: @-#lDot:%ld\n",lDot);
 		}
-		pNew->pNext=NULL;
-		if(iCount==0)
+		pNew->pNext = NULL;
+		if(iCount == 0)
 		{
-			pEnd=pNew;
-			pHead=pNew;
+			pEnd = pNew;
+			pHead = pNew;
 		}
 		else
 		{
-			pEnd->pNext=pNew;
-			pEnd=pNew;
+			pEnd->pNext = pNew;
+			pEnd = pNew;
 		}
-		pNew=(struct Show_Word_Struct*)malloc(sizeof(struct Show_Word_Struct));
+		pNew = (struct Show_Word_Struct*)malloc(sizeof(struct Show_Word_Struct));
 		iCount++;
 	}while(1);
 break_do:
@@ -128,52 +113,62 @@ break_do:
 	getchar();
 
 	int iKey,u;
-	int iModel=0;
+	int iModel = 0;
 	struct Show_Word_Struct* pShow;
 	struct Show_Word_Struct* pTemp;
-	//struct Show_Word_Struct* pPrevious;
-	pTemp=pHead;
-	//pPrevious=pTemp;
+	pTemp = pHead;
 	for(u=0;u<99999;u++)
 	{
 		printf(":");
-		iKey=(int)getchar();
-		//printf("debug: iKey:%d\n",iKey);
-		if(iKey==104) //帮助
+		iKey = (int)getchar();
+		if(iKey == 104) //帮助
 		{
-			printf("帮助：\n\t回车：下一个单词\n\tq：退出\n\tr: model\n\tn：跳转到指定数字对应的单词\n");
+			printf("帮助:\n\t回车:\t下一个单词\n\tq:\t退出\n\tr:\t切换一种模式\n\td:\t删除某个单词\n\tn:\t跳转到指定数字对应的单词\n");
 			getchar();
 		}
-		else if(iKey==114) //r:
+		else if(iKey == 100) //输入为d，函数返回要删除的单词序号
 		{
-			if(iModel==0)
+			int iInput;
+			printf("请输入要删除的单词序号：");
+			scanf("%d",&iInput);
+			if (iInput <= pEnd->iNumber)
+			{
+				return iInput; //函数返回该数字后，退出Show函数
+			}
+			else
+			{
+				printf("输入的数字大于总的单词数！\n");
+				getchar();
+			}
+		}
+		else if(iKey == 114) //r:切换一种模式
+		{
+			if(iModel == 0)
 				iModel++;
-			else if(iModel==1)
+			else if(iModel == 1)
 				iModel++;
 			else
-				iModel=0;
+				iModel = 0;
 		}
-		else if(iKey==10) //回车
+		else if(iKey == 10) //回车
 		{
-			pShow=pTemp;
-			pTemp=pTemp->pNext;
-			if(iModel==0)
+			pShow = pTemp;
+			pTemp = pTemp->pNext;
+			if(iModel == 0)
 			{
 				printf("(%d/%d) %s   %s\n",pShow->iNumber,pEnd->iNumber,pShow->cEnglish,pShow->cChinese);
 			}
-			else if(iModel==1)
+			else if(iModel == 1)
 			{
 				printf("(%d/%d) %s",pShow->iNumber,pEnd->iNumber,pShow->cEnglish);
 				getchar();
 				printf("  %s\n",pShow->cChinese);
-				//getchar();
 			}
 			else
 			{
 				printf("(%d/%d) %s",pShow->iNumber,pEnd->iNumber,pShow->cChinese);
 				getchar();
 				printf("  %s\n",pShow->cEnglish);
-				//getchar();
 			}
 			if(pTemp == NULL)
 			{
@@ -181,14 +176,14 @@ break_do:
 				break;
 			}
 		}
-		else if(iKey==110) //当输入功能键n的时候执行操作
+		else if(iKey == 110) //当输入功能键n的时候执行操作
 		{
 			int iJump; //跳转到对应数字
 			struct Show_Word_Struct* pJump;
 			printf("请输入一个数字：");
 			scanf("%d",&iJump);
 			//遍历单词表
-			pJump=pHead; //得到链表头
+			pJump = pHead; //得到链表头
 			if(pEnd->iNumber < iJump)
 			{
 				pJump = NULL;
@@ -197,9 +192,9 @@ break_do:
 			}
 			while(pJump != NULL)
 			{
-				if((pJump->iNumber!=iJump)&&(pJump != NULL))
+				if((pJump->iNumber != iJump)&&(pJump != NULL))
 				{
-					pJump=pJump->pNext;
+					pJump = pJump->pNext;
 				}
 				else if(pJump == NULL)
 				{
@@ -208,19 +203,19 @@ break_do:
 				}
 				else
 				{
-					pShow=pJump;
-					pTemp=pJump;
+					pShow = pJump;
+					pTemp = pJump;
 					printf("\n"); //回车键
 					break;
 				}
 			}
 		}
-		else if(iKey==113) //输入q退出
+		else if(iKey == 113) //输入q退出
 		{
 			printf("退出\n");
 			break;
 		}
-		else if(iKey==27) //输入溢出的情况
+		else if(iKey == 27) //输入溢出的情况
 		{
 			printf("输入不正确, 数据溢出！输入 h 查看帮助\n");
 			getchar();

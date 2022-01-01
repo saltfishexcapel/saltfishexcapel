@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <ctype.h>
-extern int iCorrectIndex[10][10]; /*排错大数组*/
+#include "cword.h"
 extern int WordListDetect(FILE *file) /*检测函数*/
 {
 	FILE *WordFile;
@@ -68,14 +68,14 @@ extern int WordListDetect(FILE *file) /*检测函数*/
 				if(i < 6) /*继续探测结束符的存在*/
 				{
 					if(fgetc(WordFile) == '#')
-                                        {
-                                                iCorrectIndex[0][2]=0;
+                    {
+                        iCorrectIndex[0][2]=0;
 						goto exit_for_a; /*探测到结束符就退出循环*/
-                                        }
-                                        else
-                                        {
-                                                iCorrectIndex[0][2]=1;
-                                        }
+                    }
+                    else
+                    {
+                        iCorrectIndex[0][2]=1;
+                    }
 				}
 				else
 				{
@@ -123,18 +123,18 @@ extern int WordListDetect(FILE *file) /*检测函数*/
 						if(isdigit(fgetc(WordFile)) != 0) /*检测1号位上是否为数字*/
 						{
 							int j;
-                              		                for(j=0;j<=5;j++) /*检测剩下是否为数字，是否包含结束位*/
-        		           	        	{
-                                       	                	if(fgetc(WordFile) == '#')
-                                       	                	{
+                            for(j=0;j<=5;j++) /*检测剩下是否为数字，是否包含结束位*/
+        		           	{
+                                if(fgetc(WordFile) == '#')
+                                {
 									iCorrectIndex[0][2]=0; /*在有限数字位数内包含结束位*/
-                                       	                        	j=6; /*退出循环*/
-                                       	                	}
-                                                        	else
-                                                        	{
-                                                                	iCorrectIndex[0][2]=1; /*没找到结束位*/
-                                                        	}
-                                                	}
+                                    j=6; /*退出循环*/
+                                }
+                            	else
+                              	{
+                                   	iCorrectIndex[0][2]=1; /*没找到结束位*/
+            	             	}
+	                    	}
 							iCorrectIndex[0][1]=1;
 						}
 						else /*不是数字*/

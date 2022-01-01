@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "cword.h"
+#include "cword.h" //包含iCorrectIndex[10][10]
+#include "itoa.h"
 extern void WriteHelp();
-extern int iCorrectIndex[10][10];
 extern void FixWordList();
-extern void Write(FILE **file) /*写单词功能函数*/
+extern void Write(FILE *file) /*写单词功能函数*/
 {
 	FILE *WordFile;
-	WordFile=*file;
+	WordFile = file;
 	struct Write_Word_Struct
 	{
 		int iNumber;
